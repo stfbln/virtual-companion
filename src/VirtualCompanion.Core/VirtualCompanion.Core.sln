@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Virtualcompanion.Core", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualCompanion.Core.Test", "test\VirtualCompanion.Core.Test\VirtualCompanion.Core.Test.csproj", "{F675008D-6382-472A-924E-8334C1F3D08B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualCompanion.Core.IntegrationTest", "test\VirtualCompanion.Core.IntegrationTest\VirtualCompanion.Core.IntegrationTest.csproj", "{3A68D585-850A-4D5F-8F86-C253B95FABFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F675008D-6382-472A-924E-8334C1F3D08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F675008D-6382-472A-924E-8334C1F3D08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F675008D-6382-472A-924E-8334C1F3D08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A68D585-850A-4D5F-8F86-C253B95FABFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A68D585-850A-4D5F-8F86-C253B95FABFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A68D585-850A-4D5F-8F86-C253B95FABFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A68D585-850A-4D5F-8F86-C253B95FABFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
