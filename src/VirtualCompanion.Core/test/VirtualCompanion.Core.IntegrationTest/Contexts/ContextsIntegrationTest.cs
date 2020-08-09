@@ -1,12 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Virtualcompanion.Core.Contexts;
+using Virtualcompanion.Core.Contexts.Configuration;
+using Virtualcompanion.Core.Contexts.Configuration.Internal;
 using Virtualcompanion.Core.Contexts.Extensibility;
+using Virtualcompanion.Core.Contexts.Features;
 using Virtualcompanion.Core.Contexts.Internal;
 
 namespace VirtualCompanion.Core.IntegrationTest.Contexts
@@ -19,21 +24,27 @@ namespace VirtualCompanion.Core.IntegrationTest.Contexts
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddTransient<IVirtualCompanionExecutionContextProcessorHandler, ConvertAudioPtToTextPtVirtualCompanionExecutionContextProcessorHandler>();
-            serviceCollection.AddTransient<IVirtualCompanionExecutionContextProcessorHandler, ConvertAudioEnToTextEnVirtualCompanionExecutionContextProcessorHandler>();
-            serviceCollection.AddTransient<IVirtualCompanionExecutionContextProcessorHandler, ConvertTextToEnVirtualCompanionExecutionContextProcessorHandler>();
-            serviceCollection.AddTransient<IVirtualCompanionExecutionContextProcessorHandler, FinalProcessorVirtualCompanionExecutionContextProcessorHandler>();
-
-            serviceCollection.AddTransient<VirtualCompanionExecutionContextProcessor>();
+            serviceCollection
+                .AddVirtualCompanion()
+                .AddContextProcess<ConvertAudioPtToTextPtVirtualCompanionExecutionContextProcessorHandler>()
+                .AddContextProcess<ConvertAudioEnToTextEnVirtualCompanionExecutionContextProcessorHandler>()
+                .AddContextProcess<ConvertTextToEnVirtualCompanionExecutionContextProcessorHandler>()
+                .AddContextProcess<FinalProcessorVirtualCompanionExecutionContextProcessorHandler>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var factory = new VirtualCompanionExecutionContextFactory();
+                var o = serviceProvider.GetRequiredService<object>();
+                var o2 = serviceProvider.GetRequiredService<object>();
+
+                Assert.AreSame(o, o2);
+            
+
+            var factory = serviceProvider.GetRequiredService<IVirtualCompanionExecutionContextFactory>();
             var context = await factory.CreateVirtualCompanionExecutionContextAsync();
 
-            context["input:audio:pt"] = new byte[2048];
+            context.AddAudioInputFeature("pt",  new byte[2048]);
 
-            var processor = serviceProvider.GetRequiredService<VirtualCompanionExecutionContextProcessor>();
+            var processor = serviceProvider.GetRequiredService<IVirtualCompanionExecutionContextProcessor>();
 
             await processor.ProcessVirtualCompanionExecutionContextAsync(context);
 
@@ -47,10 +58,10 @@ namespace VirtualCompanion.Core.IntegrationTest.Contexts
     {
         protected override void HandleDownstreamVirtualCompanionExecutionContext(IVirtualCompanionExecutionContext context)
         {
-            if (context.TryGetValue("input:audio:pt", out var audio))
+            if (context.TryGetAudioInputFeature("pt", out var audio))
             {
                 // convert audio to text
-                context["input:text:pt"] = "Brazil";
+                context.AddTextInputFeature("pt", "Brazil");
             }
         }
     }
@@ -59,10 +70,10 @@ namespace VirtualCompanion.Core.IntegrationTest.Contexts
     {
         protected override void HandleDownstreamVirtualCompanionExecutionContext(IVirtualCompanionExecutionContext context)
         {
-            if (context.TryGetValue("input:audio:en", out var audio))
+            if (context.TryGetAudioInputFeature("en", out var audio))
             {
                 // convert audio to text
-                context["input:text:en"] = "Hello World";
+                context.AddTextInputFeature("en", "Hello World");
             }
         }
     }
@@ -71,13 +82,13 @@ namespace VirtualCompanion.Core.IntegrationTest.Contexts
     {
         protected override void HandleDownstreamVirtualCompanionExecutionContext(IVirtualCompanionExecutionContext context)
         {
-            if (!context.ContainsKey("input:text:en"))
+            if (!context.TryGetTextInputFeature("en", out _))
             {
-                var textKeys = context.Keys.Where((k) => k.StartsWith("input:text"));
-                var textValue = context[textKeys.First()];
+                var features = context.GetFeatures<TextInputFeature>();
+                var textValue = features?.FirstOrDefault()?.Text;
 
                 // translate text value
-                context["input:text:en"] = "Hello World";
+                context.AddTextInputFeature("en", "Hello World");
             }
         }
     }
@@ -98,6 +109,22 @@ namespace VirtualCompanion.Core.IntegrationTest.Contexts
             // output after processing
             context["output:text:en"] = "Hello You";
             return Task.CompletedTask;
+        }
+    }
+
+    public class CustomVirtualCompanionExecutionContextConfigurationProvider : IVirtualCompanionExecutionContextConfigurationProvider
+    {
+        public VirtualCompanionExecutionContextConfiguration GetVirtualCompanionExecutionContextConfiguration()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Custom2VirtualCompanionExecutionContextConfigurationProvider : IVirtualCompanionExecutionContextConfigurationProvider
+    {
+        public VirtualCompanionExecutionContextConfiguration GetVirtualCompanionExecutionContextConfiguration()
+        {
+            throw new NotImplementedException();
         }
     }
 }

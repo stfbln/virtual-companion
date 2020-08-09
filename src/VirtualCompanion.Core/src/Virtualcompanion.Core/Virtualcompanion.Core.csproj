@@ -4,4 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="Contexts\.Servants\VirtualCompanionExecutionContextServant.cs" />
+    <Compile Include="Contexts\.Servants\VirtualCompanionExecutionContextServiceCollectionServant.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+  </ItemGroup>
+
 </Project>
