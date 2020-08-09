@@ -17,16 +17,13 @@ namespace Virtualcompanion.Core.Contexts.Extensibility.Internal
 
         public Func<IVirtualCompanionExecutionContext, Task> Build()
         {
-            // handler 1
-            // handler 2
-
             return (context) => {
 
                 Func<Task> next = () => Task.CompletedTask;
 
                 foreach (var handler in _handlers.Reverse())
                 {
-                    var localNext = next; // variable is stored in local scope of foreach loop
+                    var localNext = next;
                     next = () => handler.HandleVirtualCompanionExecutionContextAsync(context, localNext);
                 }
 
