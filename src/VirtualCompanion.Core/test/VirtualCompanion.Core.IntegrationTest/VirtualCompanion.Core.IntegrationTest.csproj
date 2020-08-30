@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\VirtualCompanion.Core.Http\VirtualCompanion.Core.Http.csproj" />
     <ProjectReference Include="..\..\src\Virtualcompanion.Core\Virtualcompanion.Core.csproj" />
   </ItemGroup>
 
